@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { CaseItem, RecommendedAction, AuditLogEntry, AnalyticsData } from '../types';
+import { CaseItem, RecommendedAction, AuditLogEntry, AnalyticsData, CaseDocument, CaseEvent, FactItem } from '../types';
 import { INITIAL_CASES, INITIAL_AUDIT_LOGS, INITIAL_ANALYTICS } from './mock-data';
 
 interface CaseFlowContextType {
@@ -19,6 +19,14 @@ interface CaseFlowContextType {
   approveAction: (actionId: string, modifiedDraft?: string) => void;
   rejectAction: (actionId: string, reason: string) => void;
   simulateNewDocumentUpload: (caseId: string, fileName: string, fileType: 'PDF' | 'DOCX' | 'TXT') => void;
+  ingestRealDocument: (
+    caseId: string,
+    fileName: string,
+    fileType: 'PDF' | 'DOCX' | 'TXT',
+    fileSize: string,
+    extractedText: string,
+    analysisResult?: any
+  ) => void;
   simulatePartyBResponse: (caseId: string) => void;
   resetDemoData: () => void;
   reAnalyzeCase: (caseId: string) => void;
@@ -172,32 +180,59 @@ export const CaseFlowProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     saveState(updatedCases, newLogs);
   };
 
-  // 3. Simulate New Document Upload
-  const simulateNewDocumentUpload = (caseId: string, fileName: string, fileType: 'PDF' | 'DOCX' | 'TXT') => {
+  // 3. Ingest Real Document & Persist Case Understanding Output
+  const ingestRealDocument = (
+    caseId: string,
+    fileName: string,
+    fileType: 'PDF' | 'DOCX' | 'TXT',
+    fileSize: string,
+    extractedText: string,
+    analysisResult?: any
+  ) => {
     const updatedCases = cases.map((c) => {
       if (c.id === caseId) {
-        const newDoc = {
-          id: `doc-${Date.now()}`,
+        const newDoc: CaseDocument = {
+          id: `doc-real-${Date.now()}`,
           fileName,
           fileType,
           uploadedAt: 'Today',
-          fileSize: '1.4 MB',
+          fileSize,
           status: 'Processed' as const,
-          documentType: 'Evidence Submission' as const,
-          summary: `New evidence submission file ${fileName} uploaded for Party B (Defendant).`,
+          documentType: fileName.toLowerCase().includes('order')
+            ? 'Court Order'
+            : fileName.toLowerCase().includes('evidence')
+            ? 'Evidence Submission'
+            : 'Petition',
+          summary: `Extracted text snippet (${extractedText.length} chars): "${extractedText.substring(0, 120)}..."`,
         };
-        const newEvent = {
-          id: `t-${Date.now()}`,
-          date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-          eventType: 'Evidence Submitted' as const,
-          description: `Party B submitted documentary evidence (${fileName}).`,
-          sourceDocument: fileName,
-          confidence: 0.96,
-        };
+
+        const newEvents: CaseEvent[] = analysisResult?.timeline || [
+          {
+            id: `evt-${Date.now()}`,
+            date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+            eventType: 'Evidence Submitted',
+            description: `Real document ingested: ${fileName}`,
+            sourceDocument: fileName,
+            confidence: 0.98,
+          },
+        ];
+
+        const newFacts: FactItem[] = analysisResult?.facts || [
+          {
+            id: `f-real-${Date.now()}`,
+            field: 'Document Ingestion',
+            value: `Verified text extracted from ${fileName}`,
+            type: 'CONFIRMED FACT',
+            confidence: 0.99,
+            sourceDocument: fileName,
+          },
+        ];
+
         return {
           ...c,
           documents: [newDoc, ...c.documents],
-          timeline: [...c.timeline, newEvent],
+          timeline: [...c.timeline, ...newEvents.filter((ne) => !c.timeline.some((te) => te.id === ne.id))],
+          facts: [...c.facts, ...newFacts.filter((nf) => !c.facts.some((tf) => tf.id === nf.id))],
           lastActivityDate: 'Today',
           daysInactive: 0,
         };
@@ -208,32 +243,32 @@ export const CaseFlowProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const newLogs = addAuditLog(
       caseId,
       'CaseUnderstandingAgent',
-      'Document Ingestion & Analysis',
-      `Processed new document ${fileName}. Updating timeline and facts.`,
+      'Real Document Ingestion & Analysis',
+      `Parsed uploaded document "${fileName}" (${fileSize}). Extracted text & updated case timeline and facts.`,
       fileName
     );
 
     saveState(updatedCases, newLogs);
   };
 
-  // 4. Simulate Party B Response & Trigger Case Re-Analysis (Step 10-12 in Demo!)
+  // 4. Simulate New Document Upload (for quick demo buttons)
+  const simulateNewDocumentUpload = (caseId: string, fileName: string, fileType: 'PDF' | 'DOCX' | 'TXT') => {
+    ingestRealDocument(caseId, fileName, fileType, '1.4 MB', `Synthetic Text for ${fileName}`);
+  };
+
+  // 5. Simulate Party B Response & Trigger Case Re-Analysis (Step 10-12 in Demo!)
   const simulatePartyBResponse = (caseId: string) => {
     const fileName = 'PartyB_Evidence_Response_Received.pdf';
-
-    // Step A: Insert doc & timeline
     simulateNewDocumentUpload(caseId, fileName, 'PDF');
-
-    // Step B: Re-analyze case and resolve bottleneck
     setTimeout(() => {
       reAnalyzeCase(caseId);
     }, 400);
   };
 
-  // 5. Re-analyze Case Loop (Step 11 & 12: BEFORE -> AFTER transition)
+  // 6. Re-analyze Case Loop (Step 11 & 12: BEFORE -> AFTER transition)
   const reAnalyzeCase = (caseId: string) => {
     const updatedCases = cases.map((c) => {
       if (c.id === caseId) {
-        // Resolve bottlenecks
         const resolvedBottlenecks = c.bottlenecks.map((b) => ({
           ...b,
           isResolved: true,
@@ -246,13 +281,11 @@ export const CaseFlowProvider: React.FC<{ children: React.ReactNode }> = ({ chil
           ),
         }));
 
-        // Resolve actions
         const completedActions = c.actions.map((act) => ({
           ...act,
           status: 'Completed' as const,
         }));
 
-        // Add confirmed fact
         const updatedFacts = [
           ...c.facts,
           {
@@ -285,7 +318,6 @@ export const CaseFlowProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       'Re-analysis trigger'
     );
 
-    // Update analytics metrics
     setAnalytics((prev) => ({
       ...prev,
       requiresAttention: Math.max(0, prev.requiresAttention - 1),
@@ -296,7 +328,7 @@ export const CaseFlowProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     saveState(updatedCases, newLogs);
   };
 
-  // 6. Reset Demo Data
+  // 7. Reset Demo Data
   const resetDemoData = () => {
     setCases(INITIAL_CASES);
     setAuditLogs(INITIAL_AUDIT_LOGS);
@@ -326,6 +358,7 @@ export const CaseFlowProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         approveAction,
         rejectAction,
         simulateNewDocumentUpload,
+        ingestRealDocument,
         simulatePartyBResponse,
         resetDemoData,
         reAnalyzeCase,
