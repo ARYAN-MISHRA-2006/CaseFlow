@@ -4,8 +4,9 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { Header } from '@/components/layout/Header';
 import { useCaseFlow } from '@/lib/store';
-import { Search, Filter, ArrowUpDown, ExternalLink, CheckCircle2 } from 'lucide-react';
-import { Priority } from '@/types';
+import { Search, Filter, ArrowUpDown, ExternalLink, CheckCircle2, Plus } from 'lucide-react';
+import { Priority, CaseItem } from '@/types';
+import { CreateCaseModal } from '@/components/cases/CreateCaseModal';
 
 export default function CasesDirectoryPage() {
   const { cases } = useCaseFlow();
@@ -16,6 +17,16 @@ export default function CasesDirectoryPage() {
   const [selectedBottleneck, setSelectedBottleneck] = useState<string>('ALL');
   const [selectedStatus, setSelectedStatus] = useState<string>('ALL');
   const [sortBy, setSortBy] = useState<'inactivity' | 'severity' | 'filedDate'>('inactivity');
+
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  const handleCaseCreated = (newCase: CaseItem) => {
+    setSuccessMessage(`Case ${newCase.id} created successfully.`);
+    setTimeout(() => {
+      setSuccessMessage(null);
+    }, 6000);
+  };
 
   // Filtering
   const filteredCases = cases.filter((c) => {
@@ -54,16 +65,49 @@ export default function CasesDirectoryPage() {
       <Header />
 
       <main className="px-8 mt-6 space-y-6 max-w-7xl mx-auto">
+        {/* Success Alert Banner */}
+        {successMessage && (
+          <div className="bg-emerald-50 border border-emerald-300 p-4 rounded-xl flex items-center justify-between text-xs text-emerald-900 font-bold shadow-xs animate-fadeIn">
+            <div className="flex items-center space-x-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+              <span>{successMessage}</span>
+            </div>
+            <button
+              onClick={() => setSuccessMessage(null)}
+              className="text-emerald-700 hover:text-emerald-950 underline font-semibold"
+            >
+              Dismiss
+            </button>
+          </div>
+        )}
+
         {/* Header Title Bar */}
         <div className="flex items-center justify-between border-b border-slate-200 pb-4">
           <div>
             <h1 className="text-2xl font-serif text-[#172033] font-bold tracking-tight">Case Directory</h1>
-            <p className="text-xs text-slate-500 mt-0.5">Comprehensive repository of synthetic court cases under management</p>
+            <p className="text-xs text-slate-500 mt-0.5">Comprehensive repository of court cases under management</p>
           </div>
-          <span className="text-xs font-semibold text-slate-600 bg-white px-3 py-1.5 rounded-lg border border-slate-200">
-            Total Cases: <strong>{cases.length}</strong>
-          </span>
+          
+          <div className="flex items-center space-x-3">
+            <span className="text-xs font-semibold text-slate-600 bg-white px-3 py-2 rounded-lg border border-slate-200">
+              Total Cases: <strong>{cases.length}</strong>
+            </span>
+
+            <button
+              onClick={() => setIsCreateModalOpen(true)}
+              className="px-4 py-2 bg-[#172A46] hover:bg-[#0F1B2D] text-white font-bold text-xs rounded-lg shadow-xs flex items-center space-x-1.5 transition-all"
+            >
+              <Plus className="w-4 h-4 text-[#C8AA72]" />
+              <span>+ New Case</span>
+            </button>
+          </div>
         </div>
+
+        <CreateCaseModal
+          isOpen={isCreateModalOpen}
+          onClose={() => setIsCreateModalOpen(false)}
+          onSuccess={handleCaseCreated}
+        />
 
         {/* Search & Filter Toolbar */}
         <div className="bg-white p-5 rounded-xl border border-slate-200/90 shadow-xs space-y-4">

@@ -106,6 +106,9 @@ function WorkspaceContent() {
                 >
                   {caseData.status}
                 </span>
+                <span className="px-2.5 py-0.5 text-xs font-semibold bg-slate-100 text-slate-600 border border-slate-300 rounded-full">
+                  Synthetic case — Demo data
+                </span>
               </div>
               <h1 className="text-xl font-serif font-bold text-slate-900">{caseData.title}</h1>
               <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500 pt-1">
@@ -137,7 +140,7 @@ function WorkspaceContent() {
               </button>
 
               <Link
-                href="/upload"
+                href={`/upload?caseId=${caseData.id}`}
                 className="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition-all"
               >
                 <UploadCloud className="w-3.5 h-3.5 text-slate-500" />
@@ -223,37 +226,45 @@ function WorkspaceContent() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {caseData.facts.map((fact) => (
-                  <div key={fact.id} className="p-4 rounded-lg bg-slate-50 border border-slate-200 space-y-2">
-                    <div className="flex items-center justify-between text-[11px]">
-                      <span className="font-semibold text-slate-500 uppercase tracking-wider">{fact.field}</span>
-                      <span
-                        className={`px-2 py-0.5 text-[10px] font-bold rounded ${
-                          fact.type === 'CONFIRMED FACT'
-                            ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
-                            : fact.type === 'AI INFERENCE'
-                            ? 'bg-purple-100 text-purple-800 border border-purple-200'
-                            : 'bg-slate-200 text-slate-700'
-                        }`}
-                      >
-                        {fact.type} ({(fact.confidence * 100).toFixed(0)}%)
-                      </span>
+              {caseData.facts.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {caseData.facts.map((fact) => (
+                    <div key={fact.id} className="p-4 rounded-lg bg-slate-50 border border-slate-200 space-y-2">
+                      <div className="flex items-center justify-between text-[11px]">
+                        <span className="font-semibold text-slate-500 uppercase tracking-wider">{fact.field}</span>
+                        <span
+                          className={`px-2 py-0.5 text-[10px] font-bold rounded ${
+                            fact.type === 'CONFIRMED FACT'
+                              ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                              : fact.type === 'AI INFERENCE'
+                              ? 'bg-purple-100 text-purple-800 border border-purple-200'
+                              : 'bg-slate-200 text-slate-700'
+                          }`}
+                        >
+                          {fact.type} ({(fact.confidence * 100).toFixed(0)}%)
+                        </span>
+                      </div>
+                      <p className="text-xs font-bold text-slate-900">{fact.value}</p>
+                      {fact.sourceDocument ? (
+                        <div className="text-[11px] text-[#172A46] font-medium flex items-center gap-1 pt-1 border-t border-slate-200">
+                          <FileText className="w-3 h-3 text-[#B08D57]" />
+                          <span>Source: {fact.sourceDocument}</span>
+                        </div>
+                      ) : (
+                        <div className="text-[11px] text-slate-400 font-normal italic pt-1 border-t border-slate-200">
+                          Not found in provided documents.
+                        </div>
+                      )}
                     </div>
-                    <p className="text-xs font-bold text-slate-900">{fact.value}</p>
-                    {fact.sourceDocument ? (
-                      <div className="text-[11px] text-[#172A46] font-medium flex items-center gap-1 pt-1 border-t border-slate-200">
-                        <FileText className="w-3 h-3 text-[#B08D57]" />
-                        <span>Source: {fact.sourceDocument}</span>
-                      </div>
-                    ) : (
-                      <div className="text-[11px] text-slate-400 font-normal italic pt-1 border-t border-slate-200">
-                        Not found in provided documents.
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="p-8 rounded-lg bg-slate-50 border border-slate-200 text-center space-y-2">
+                  <HelpCircle className="w-8 h-8 text-slate-400 mx-auto" />
+                  <h3 className="text-xs font-bold text-slate-800">No extracted facts yet.</h3>
+                  <p className="text-[11px] text-slate-500">Facts will be extracted by CaseUnderstandingAgent once documents are uploaded.</p>
+                </div>
+              )}
             </div>
 
             <div className="bg-white p-6 rounded-xl border border-slate-200/90 shadow-xs space-y-4">
@@ -303,34 +314,42 @@ function WorkspaceContent() {
               <span className="text-xs text-slate-500 font-semibold">{caseData.timeline.length} Recorded Events</span>
             </div>
 
-            <div className="relative pl-6 space-y-6 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200">
-              {caseData.timeline.map((event) => (
-                <div key={event.id} className="relative group">
-                  <div className="absolute -left-6 top-1 w-4 h-4 rounded-full bg-[#172A46] ring-4 ring-white border border-[#0F1B2D] flex items-center justify-center"></div>
+            {caseData.timeline.length > 0 ? (
+              <div className="relative pl-6 space-y-6 before:absolute before:left-2 before:top-2 before:bottom-2 before:w-0.5 before:bg-slate-200">
+                {caseData.timeline.map((event) => (
+                  <div key={event.id} className="relative group">
+                    <div className="absolute -left-6 top-1 w-4 h-4 rounded-full bg-[#172A46] ring-4 ring-white border border-[#0F1B2D] flex items-center justify-center"></div>
 
-                  <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 hover:border-[#172A46] transition-colors space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <span className="text-xs font-mono font-bold text-[#172A46] bg-slate-200/80 px-2 py-0.5 rounded border border-slate-300">
-                          {event.date}
-                        </span>
-                        <span className="text-xs font-bold text-slate-900">{event.eventType}</span>
+                    <div className="bg-slate-50 p-4 rounded-xl border border-slate-200 hover:border-[#172A46] transition-colors space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-2">
+                          <span className="text-xs font-mono font-bold text-[#172A46] bg-slate-200/80 px-2 py-0.5 rounded border border-slate-300">
+                            {event.date}
+                          </span>
+                          <span className="text-xs font-bold text-slate-900">{event.eventType}</span>
+                        </div>
+                        <span className="text-[11px] font-semibold text-slate-400">Confidence: {(event.confidence * 100).toFixed(0)}%</span>
                       </div>
-                      <span className="text-[11px] font-semibold text-slate-400">Confidence: {(event.confidence * 100).toFixed(0)}%</span>
+
+                      <p className="text-xs text-slate-700 font-medium">{event.description}</p>
+
+                      {event.sourceDocument && (
+                        <div className="pt-2 border-t border-slate-200 flex items-center space-x-2 text-[11px] text-[#172A46] font-semibold">
+                          <FileText className="w-3.5 h-3.5 text-[#B08D57]" />
+                          <span>Source Document: {event.sourceDocument}</span>
+                        </div>
+                      )}
                     </div>
-
-                    <p className="text-xs text-slate-700 font-medium">{event.description}</p>
-
-                    {event.sourceDocument && (
-                      <div className="pt-2 border-t border-slate-200 flex items-center space-x-2 text-[11px] text-[#172A46] font-semibold">
-                        <FileText className="w-3.5 h-3.5 text-[#B08D57]" />
-                        <span>Source Document: {event.sourceDocument}</span>
-                      </div>
-                    )}
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-8 rounded-lg bg-slate-50 border border-slate-200 text-center space-y-2">
+                <Clock className="w-8 h-8 text-slate-400 mx-auto" />
+                <h3 className="text-xs font-bold text-slate-800">No procedural events recorded yet.</h3>
+                <p className="text-[11px] text-slate-500">Timeline events will be populated automatically when case documents are processed.</p>
+              </div>
+            )}
           </div>
         )}
 
@@ -350,36 +369,52 @@ function WorkspaceContent() {
               </Link>
             </div>
 
-            <div className="divide-y divide-slate-100 border border-slate-200 rounded-lg overflow-hidden">
-              {caseData.documents.map((doc) => (
-                <div key={doc.id} className="p-4 hover:bg-slate-50 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-4">
-                  <div className="flex items-start space-x-3">
-                    <div className="w-9 h-9 rounded bg-slate-100 border border-slate-300 text-[#172A46] flex items-center justify-center shrink-0 font-bold text-xs uppercase">
-                      {doc.fileType}
-                    </div>
-                    <div>
-                      <div className="flex items-center space-x-2">
-                        <span className="font-bold text-xs text-slate-900">{doc.fileName}</span>
-                        <span className="px-2 py-0.5 text-[10px] font-semibold bg-slate-100 text-slate-600 rounded">
-                          {doc.documentType}
-                        </span>
+            {caseData.documents.length > 0 ? (
+              <div className="divide-y divide-slate-100 border border-slate-200 rounded-lg overflow-hidden">
+                {caseData.documents.map((doc) => (
+                  <div key={doc.id} className="p-4 hover:bg-slate-50 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div className="flex items-start space-x-3">
+                      <div className="w-9 h-9 rounded bg-slate-100 border border-slate-300 text-[#172A46] flex items-center justify-center shrink-0 font-bold text-xs uppercase">
+                        {doc.fileType}
                       </div>
-                      <p className="text-xs text-slate-500 mt-1">{doc.summary}</p>
-                      <div className="text-[11px] text-slate-400 mt-1 space-x-3">
-                        <span>Uploaded: {doc.uploadedAt}</span>
-                        <span>Size: {doc.fileSize}</span>
+                      <div>
+                        <div className="flex items-center space-x-2">
+                          <span className="font-bold text-xs text-slate-900">{doc.fileName}</span>
+                          <span className="px-2 py-0.5 text-[10px] font-semibold bg-slate-100 text-slate-600 rounded">
+                            {doc.documentType}
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-500 mt-1">{doc.summary}</p>
+                        <div className="text-[11px] text-slate-400 mt-1 space-x-3">
+                          <span>Uploaded: {doc.uploadedAt}</span>
+                          <span>Size: {doc.fileSize}</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="flex items-center space-x-2 shrink-0">
-                    <span className="px-2.5 py-1 text-[10px] font-bold rounded bg-emerald-100 text-emerald-800">
-                      {doc.status}
-                    </span>
+                    <div className="flex items-center space-x-2 shrink-0">
+                      <span className="px-2.5 py-1 text-[10px] font-bold rounded bg-emerald-100 text-emerald-800">
+                        {doc.status}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="p-10 rounded-lg bg-slate-50 border border-slate-200 text-center space-y-3">
+                <FileText className="w-10 h-10 text-slate-400 mx-auto" />
+                <h3 className="text-sm font-bold text-slate-800">No documents uploaded yet.</h3>
+                <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                  Upload court filings, petitions, or evidence documents (.pdf, .docx, .txt) to initiate text extraction and automated AI case analysis.
+                </p>
+                <Link
+                  href={`/upload?caseId=${caseData.id}`}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 bg-[#172A46] text-white text-xs font-bold rounded-lg hover:bg-[#0F1B2D]"
+                >
+                  <UploadCloud className="w-4 h-4 text-[#C8AA72]" /> Upload Document
+                </Link>
+              </div>
+            )}
           </div>
         )}
 
@@ -550,84 +585,94 @@ function WorkspaceContent() {
               </div>
             </div>
 
-            <div className="space-y-4">
-              {caseData.actions.map((act) => (
-                <div key={act.id} className="bg-white p-6 rounded-xl border border-slate-200/90 shadow-xs space-y-4">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <div className="flex items-center space-x-2">
-                        <span className="font-bold text-sm text-slate-900">{act.actionType}</span>
-                        <span
-                          className={`px-2 py-0.5 text-[10px] font-bold rounded ${
-                            act.status === 'Pending Approval'
-                              ? 'bg-amber-100 text-amber-800'
-                              : act.status === 'Approved'
-                              ? 'bg-emerald-100 text-emerald-800'
-                              : 'bg-red-100 text-red-800'
-                          }`}
-                        >
-                          {act.status}
-                        </span>
+            {caseData.actions.length > 0 ? (
+              <div className="space-y-4">
+                {caseData.actions.map((act) => (
+                  <div key={act.id} className="bg-white p-6 rounded-xl border border-slate-200/90 shadow-xs space-y-4">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <div className="flex items-center space-x-2">
+                          <span className="font-bold text-sm text-slate-900">{act.actionType}</span>
+                          <span
+                            className={`px-2 py-0.5 text-[10px] font-bold rounded ${
+                              act.status === 'Pending Approval'
+                                ? 'bg-amber-100 text-amber-800'
+                                : act.status === 'Approved'
+                                ? 'bg-emerald-100 text-emerald-800'
+                                : 'bg-red-100 text-red-800'
+                            }`}
+                          >
+                            {act.status}
+                          </span>
+                        </div>
+                        <p className="text-xs text-slate-600 mt-1">Reason: <strong>{act.reason}</strong></p>
                       </div>
-                      <p className="text-xs text-slate-600 mt-1">Reason: <strong>{act.reason}</strong></p>
+
+                      <div className="text-right text-xs">
+                        <span className="font-bold text-[#172A46]">AI Confidence: {(act.confidence * 100).toFixed(0)}%</span>
+                        <div className="text-slate-400 text-[11px] mt-0.5">Created: {act.createdAt}</div>
+                      </div>
                     </div>
 
-                    <div className="text-right text-xs">
-                      <span className="font-bold text-[#172A46]">AI Confidence: {(act.confidence * 100).toFixed(0)}%</span>
-                      <div className="text-slate-400 text-[11px] mt-0.5">Created: {act.createdAt}</div>
-                    </div>
-                  </div>
+                    <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 space-y-2">
+                      <div className="flex items-center justify-between text-xs font-bold text-slate-700">
+                        <span>Generated Draft Communication:</span>
+                        {act.status === 'Pending Approval' && (
+                          <button
+                            onClick={() => {
+                              setEditingActionId(act.id);
+                              setActionDraftText(act.draftCommunication);
+                            }}
+                            className="text-[#172A46] hover:underline text-[11px] flex items-center gap-1 font-semibold"
+                          >
+                            <Edit3 className="w-3 h-3" /> Edit Draft
+                          </button>
+                        )}
+                      </div>
 
-                  <div className="bg-slate-50 p-4 rounded-lg border border-slate-200 space-y-2">
-                    <div className="flex items-center justify-between text-xs font-bold text-slate-700">
-                      <span>Generated Draft Communication:</span>
-                      {act.status === 'Pending Approval' && (
-                        <button
-                          onClick={() => {
-                            setEditingActionId(act.id);
-                            setActionDraftText(act.draftCommunication);
-                          }}
-                          className="text-[#172A46] hover:underline text-[11px] flex items-center gap-1 font-semibold"
-                        >
-                          <Edit3 className="w-3 h-3" /> Edit Draft
-                        </button>
+                      {editingActionId === act.id ? (
+                        <textarea
+                          value={actionDraftText}
+                          onChange={(e) => setActionDraftText(e.target.value)}
+                          className="w-full h-32 p-3 text-xs bg-white border border-[#172A46] rounded font-mono text-slate-800 focus:outline-none"
+                        />
+                      ) : (
+                        <pre className="text-xs font-mono text-slate-700 whitespace-pre-wrap">{act.draftCommunication}</pre>
                       )}
                     </div>
 
-                    {editingActionId === act.id ? (
-                      <textarea
-                        value={actionDraftText}
-                        onChange={(e) => setActionDraftText(e.target.value)}
-                        className="w-full h-32 p-3 text-xs bg-white border border-[#172A46] rounded font-mono text-slate-800 focus:outline-none"
-                      />
+                    {act.status === 'Pending Approval' ? (
+                      <div className="flex items-center justify-end space-x-3 pt-2 border-t border-slate-100">
+                        <button
+                          onClick={() => handleReject(act.id)}
+                          className="px-4 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-lg transition-all"
+                        >
+                          Reject Action
+                        </button>
+                        <button
+                          onClick={() => handleApprove(act.id)}
+                          className="px-4 py-1.5 bg-[#172A46] hover:bg-[#0F1B2D] text-white font-bold text-xs rounded-lg shadow-xs flex items-center gap-1 transition-all"
+                        >
+                          <Check className="w-3.5 h-3.5" /> Approve Action
+                        </button>
+                      </div>
                     ) : (
-                      <pre className="text-xs font-mono text-slate-700 whitespace-pre-wrap">{act.draftCommunication}</pre>
+                      <div className="text-xs text-slate-500 italic pt-2 border-t border-slate-100">
+                        Action approved by {act.approvedBy} at {act.approvedAt}.
+                      </div>
                     )}
                   </div>
-
-                  {act.status === 'Pending Approval' ? (
-                    <div className="flex items-center justify-end space-x-3 pt-2 border-t border-slate-100">
-                      <button
-                        onClick={() => handleReject(act.id)}
-                        className="px-4 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-lg transition-all"
-                      >
-                        Reject Action
-                      </button>
-                      <button
-                        onClick={() => handleApprove(act.id)}
-                        className="px-4 py-1.5 bg-[#172A46] hover:bg-[#0F1B2D] text-white font-bold text-xs rounded-lg shadow-xs flex items-center gap-1 transition-all"
-                      >
-                        <Check className="w-3.5 h-3.5" /> Approve Action
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="text-xs text-slate-500 italic pt-2 border-t border-slate-100">
-                      Action approved by {act.approvedBy} at {act.approvedAt}.
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className="bg-white p-10 rounded-xl border border-slate-200 text-center space-y-3">
+                <Sparkles className="w-10 h-10 text-slate-400 mx-auto" />
+                <h3 className="text-sm font-bold text-slate-800">No recommended actions yet.</h3>
+                <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                  Action recommendations will be generated after bottleneck scanning.
+                </p>
+              </div>
+            )}
           </div>
         )}
 

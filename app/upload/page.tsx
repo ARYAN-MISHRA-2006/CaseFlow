@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Header } from '@/components/layout/Header';
 import { useCaseFlow } from '@/lib/store';
 import {
@@ -18,9 +19,17 @@ import Link from 'next/link';
 
 type IngestionState = 'IDLE' | 'FILE_SELECTED' | 'UPLOADING' | 'EXTRACTING' | 'ANALYZING' | 'SUCCESS' | 'ERROR';
 
-export default function DocumentUploadPage() {
+function UploadContent() {
+  const searchParams = useSearchParams();
+  const queryCaseId = searchParams.get('caseId');
   const { cases, ingestRealDocument } = useCaseFlow();
-  const [selectedCaseId, setSelectedCaseId] = useState<string>('CF-1024');
+
+  const [selectedCaseId, setSelectedCaseId] = useState<string>(() => {
+    if (queryCaseId && cases.some((c) => c.id === queryCaseId)) {
+      return queryCaseId;
+    }
+    return cases[0]?.id || 'CF-1024';
+  });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [ingestionState, setIngestionState] = useState<IngestionState>('IDLE');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -409,5 +418,13 @@ export default function DocumentUploadPage() {
         </div>
       </main>
     </div>
+  );
+}
+
+export default function DocumentUploadPage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center text-xs text-slate-500">Loading Document Ingestion...</div>}>
+      <UploadContent />
+    </Suspense>
   );
 }

@@ -1,8 +1,23 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { CaseItem, RecommendedAction, AuditLogEntry, AnalyticsData, CaseDocument, CaseEvent, FactItem } from '../types';
+import { CaseItem, RecommendedAction, AuditLogEntry, AnalyticsData, CaseDocument, CaseEvent, FactItem, CaseStage, CaseStatus, Priority } from '../types';
 import { INITIAL_CASES, INITIAL_AUDIT_LOGS, INITIAL_ANALYTICS } from './mock-data';
+
+export interface CreateCaseParams {
+  title: string;
+  caseType: string;
+  court: string;
+  filedDate: string;
+  plaintiffName: string;
+  plaintiffCounsel?: string;
+  defendantName: string;
+  defendantCounsel?: string;
+  currentStage?: CaseStage;
+  status?: CaseStatus;
+  priority?: Priority;
+  description?: string;
+}
 
 interface CaseFlowContextType {
   cases: CaseItem[];
@@ -16,6 +31,7 @@ interface CaseFlowContextType {
   setSidebarCollapsed: (val: boolean) => void;
   toggleSidebar: () => void;
   getCase: (id: string) => CaseItem | undefined;
+  createCase: (params: CreateCaseParams) => CaseItem;
   approveAction: (actionId: string, modifiedDraft?: string) => void;
   rejectAction: (actionId: string, reason: string) => void;
   simulateNewDocumentUpload: (caseId: string, fileName: string, fileType: 'PDF' | 'DOCX' | 'TXT') => void;
@@ -47,7 +63,10 @@ export const CaseFlowProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     try {
       const storedCases = localStorage.getItem('caseflow_cases');
       if (storedCases) {
-        setCases(JSON.parse(storedCases));
+        const parsed: CaseItem[] = JSON.parse(storedCases);
+        const missingInitial = INITIAL_CASES.filter((ic) => !parsed.some((c) => c.id === ic.id));
+        const merged = [...parsed, ...missingInitial];
+        setCases(merged);
       }
       const storedLogs = localStorage.getItem('caseflow_audit');
       if (storedLogs) {
@@ -87,6 +106,81 @@ export const CaseFlowProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   };
 
   const getCase = (id: string) => cases.find((c) => c.id === id);
+
+  // Create New Persistent Synthetic Case
+  const createCase = (params: CreateCaseParams): CaseItem => {
+    const existingNumbers = cases
+      .map((c) => {
+        const match = c.id.match(/^CF-(\d+)$/i);
+        return match ? parseInt(match[1], 10) : null;
+      })
+      .filter((n): n is number => n !== null && !isNaN(n));
+
+    const maxId = existingNumbers.length > 0 ? Math.max(...existingNumbers) : 1005;
+    const newId = `CF-${maxId + 1}`;
+
+    const formattedFiledDate = params.filedDate
+      ? new Date(params.filedDate).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+      : new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+
+    const newCase: CaseItem = {
+      id: newId,
+      title: params.title.trim(),
+      caseType: params.caseType.trim(),
+      court: params.court.trim(),
+      filedDate: formattedFiledDate,
+      currentStage: params.currentStage || 'Discovery / Evidence',
+      lastActivityDate: 'Today',
+      daysInactive: 0,
+      priority: params.priority || 'HIGH',
+      status: params.status || 'Active',
+      parties: [
+        {
+          name: params.plaintiffName.trim(),
+          role: 'Plaintiff',
+          counsel: params.plaintiffCounsel?.trim() || undefined,
+          status: 'Active',
+        },
+        {
+          name: params.defendantName.trim(),
+          role: 'Defendant',
+          counsel: params.defendantCounsel?.trim() || undefined,
+          status: 'Active',
+        },
+      ],
+      facts: [],
+      documents: [],
+      timeline: [
+        {
+          id: `evt-init-${Date.now()}`,
+          date: formattedFiledDate,
+          eventType: 'Case Filed',
+          description: `Synthetic case filed in ${params.court}. Parties: ${params.plaintiffName} vs ${params.defendantName}.`,
+          confidence: 1.0,
+        },
+      ],
+      bottlenecks: [],
+      actions: [],
+    };
+
+    const updatedCases = [newCase, ...cases];
+    const newLogs = addAuditLog(
+      newId,
+      'Human Admin',
+      'Create Synthetic Case',
+      `Created new synthetic case #${newId} "${newCase.title}" (${newCase.caseType}) in ${newCase.court}.`,
+      newId,
+      'Created Case'
+    );
+
+    setAnalytics((prev) => ({
+      ...prev,
+      totalCases: prev.totalCases + 1,
+    }));
+
+    saveState(updatedCases, newLogs);
+    return newCase;
+  };
 
   const addAuditLog = (
     caseId: string,
@@ -355,6 +449,7 @@ export const CaseFlowProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setSidebarCollapsed,
         toggleSidebar,
         getCase,
+        createCase,
         approveAction,
         rejectAction,
         simulateNewDocumentUpload,
