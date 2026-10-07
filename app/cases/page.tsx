@@ -4,8 +4,8 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { Header } from '@/components/layout/Header';
 import { useCaseFlow } from '@/lib/store';
-import { Search, Filter, ArrowUpDown, ExternalLink, AlertTriangle, CheckCircle2, ShieldAlert } from 'lucide-react';
-import { Priority, CaseStage, CaseStatus, BottleneckType } from '@/types';
+import { Search, Filter, ArrowUpDown, ExternalLink, CheckCircle2 } from 'lucide-react';
+import { Priority } from '@/types';
 
 export default function CasesDirectoryPage() {
   const { cases } = useCaseFlow();
@@ -50,12 +50,23 @@ export default function CasesDirectoryPage() {
   });
 
   return (
-    <div className="flex-1 pb-12 bg-slate-50 min-h-screen">
-      <Header title="Case Directory" subtitle="Comprehensive list of synthetic court cases under management" />
+    <div className="flex-1 pb-16 bg-slate-50 min-h-screen">
+      <Header />
 
-      <main className="px-8 mt-6 space-y-6 max-w-7xl">
+      <main className="px-8 mt-6 space-y-6 max-w-7xl mx-auto">
+        {/* Header Title Bar */}
+        <div className="flex items-center justify-between border-b border-slate-200 pb-4">
+          <div>
+            <h1 className="text-2xl font-serif text-[#172033] font-bold tracking-tight">Case Directory</h1>
+            <p className="text-xs text-slate-500 mt-0.5">Comprehensive repository of synthetic court cases under management</p>
+          </div>
+          <span className="text-xs font-semibold text-slate-600 bg-white px-3 py-1.5 rounded-lg border border-slate-200">
+            Total Cases: <strong>{cases.length}</strong>
+          </span>
+        </div>
+
         {/* Search & Filter Toolbar */}
-        <div className="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+        <div className="bg-white p-5 rounded-xl border border-slate-200/90 shadow-xs space-y-4">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             {/* Search Bar */}
             <div className="relative flex-1">
@@ -65,7 +76,7 @@ export default function CasesDirectoryPage() {
                 placeholder="Search by Case ID (#CF-1024), Title, Court, or Case Type..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800"
+                className="w-full pl-10 pr-4 py-2 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#172A46] text-slate-800"
               />
             </div>
 
@@ -76,7 +87,7 @@ export default function CasesDirectoryPage() {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as any)}
-                className="px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-[#172A46]"
               >
                 <option value="inactivity">Days Inactive (Highest First)</option>
                 <option value="severity">Priority Severity</option>
@@ -156,7 +167,7 @@ export default function CasesDirectoryPage() {
                   setSelectedBottleneck('ALL');
                   setSelectedStatus('ALL');
                 }}
-                className="text-xs text-indigo-600 hover:text-indigo-800 font-semibold underline ml-auto"
+                className="text-xs text-[#172A46] hover:text-[#B08D57] font-semibold underline ml-auto"
               >
                 Clear Filters
               </button>
@@ -165,7 +176,7 @@ export default function CasesDirectoryPage() {
         </div>
 
         {/* Case Table */}
-        <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <div className="bg-white rounded-xl border border-slate-200/90 shadow-xs overflow-hidden">
           <div className="px-5 py-3.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
             <span className="text-xs font-semibold text-slate-600">
               Showing <strong>{sortedCases.length}</strong> of <strong>{cases.length}</strong> total synthetic cases
@@ -193,13 +204,13 @@ export default function CasesDirectoryPage() {
                   const activeBottleneck = c.bottlenecks.find((b) => !b.isResolved);
                   return (
                     <tr key={c.id} className="hover:bg-slate-50/80 transition-colors group">
-                      <td className="py-4 px-4 font-mono font-bold text-indigo-600">
+                      <td className="py-4 px-4 font-mono font-bold text-[#172A46]">
                         <Link href={`/cases/${c.id}`} className="hover:underline flex items-center gap-1">
                           <span>{c.id}</span>
                         </Link>
                       </td>
                       <td className="py-4 px-4 max-w-[220px]">
-                        <Link href={`/cases/${c.id}`} className="font-bold text-slate-900 hover:text-indigo-600 transition-colors block truncate">
+                        <Link href={`/cases/${c.id}`} className="font-bold text-slate-900 hover:text-[#172A46] transition-colors block truncate">
                           {c.title}
                         </Link>
                         <span className="text-[11px] text-slate-400 block truncate">{c.caseType}</span>
@@ -208,19 +219,19 @@ export default function CasesDirectoryPage() {
                       <td className="py-4 px-4 text-slate-500">{c.filedDate}</td>
                       <td className="py-4 px-4 font-medium text-slate-700">{c.currentStage}</td>
                       <td className="py-4 px-4">
-                        <span className={`font-semibold ${c.daysInactive > 60 ? 'text-red-600' : c.daysInactive > 30 ? 'text-amber-600' : 'text-slate-600'}`}>
+                        <span className={`font-semibold ${c.daysInactive > 60 ? 'text-[#C62828]' : c.daysInactive > 30 ? 'text-[#D97706]' : 'text-slate-600'}`}>
                           {c.daysInactive} days
                         </span>
                         <span className="text-[10px] text-slate-400 block">Since {c.lastActivityDate}</span>
                       </td>
                       <td className="py-4 px-4">
                         {activeBottleneck ? (
-                          <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-purple-50 text-purple-700 border border-purple-200">
+                          <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-purple-50 text-purple-800 border border-purple-200">
                             {activeBottleneck.type}
                           </span>
                         ) : c.bottlenecks.some((b) => b.isResolved) ? (
-                          <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1 w-fit">
-                            <CheckCircle2 className="w-3 h-3 text-emerald-600" /> Resolved
+                          <span className="px-2 py-0.5 rounded text-[11px] font-semibold bg-emerald-50 text-emerald-800 border border-emerald-200 flex items-center gap-1 w-fit">
+                            <CheckCircle2 className="w-3 h-3 text-emerald-700" /> Resolved
                           </span>
                         ) : (
                           <span className="text-slate-400 text-[11px]">None Identified</span>
@@ -230,11 +241,11 @@ export default function CasesDirectoryPage() {
                         <span
                           className={`px-2 py-0.5 font-bold rounded text-[10px] uppercase ${
                             c.priority === 'CRITICAL'
-                              ? 'bg-red-100 text-red-800 border border-red-200'
+                              ? 'bg-red-50 text-[#C62828] border border-red-200'
                               : c.priority === 'HIGH'
-                              ? 'bg-amber-100 text-amber-800 border border-amber-200'
+                              ? 'bg-amber-50 text-[#D97706] border border-amber-200'
                               : c.priority === 'MEDIUM'
-                              ? 'bg-blue-100 text-blue-800 border border-blue-200'
+                              ? 'bg-blue-50 text-[#2563EB] border border-blue-200'
                               : 'bg-slate-100 text-slate-600 border border-slate-200'
                           }`}
                         >
@@ -245,10 +256,10 @@ export default function CasesDirectoryPage() {
                         <span
                           className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
                             c.status === 'Potentially Unblocked' || c.status === 'Resolved'
-                              ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                              ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
                               : c.status === 'Bottleneck Detected'
-                              ? 'bg-purple-100 text-purple-800 border border-purple-200'
-                              : 'bg-amber-100 text-amber-800 border border-amber-200'
+                              ? 'bg-red-50 text-red-800 border border-red-200'
+                              : 'bg-amber-50 text-amber-800 border border-amber-200'
                           }`}
                         >
                           {c.status}
@@ -257,9 +268,9 @@ export default function CasesDirectoryPage() {
                       <td className="py-4 px-4 text-right">
                         <Link
                           href={`/cases/${c.id}`}
-                          className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded font-semibold text-xs shadow-sm inline-flex items-center gap-1 transition-all"
+                          className="px-3 py-1.5 bg-[#172A46] hover:bg-[#0F1B2D] text-white rounded font-semibold text-xs shadow-xs inline-flex items-center gap-1 transition-all"
                         >
-                          <span>Open</span>
+                          <span>Open Workspace</span>
                           <ExternalLink className="w-3 h-3" />
                         </Link>
                       </td>

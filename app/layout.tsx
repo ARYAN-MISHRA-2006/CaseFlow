@@ -1,15 +1,15 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
-import { Suspense } from 'react';
+import { Inter, Newsreader } from 'next/font/google';
 import './globals.css';
 import { CaseFlowProvider } from '@/lib/store';
-import { Sidebar } from '@/components/layout/Sidebar';
+import { AppShell } from '@/components/layout/AppShell';
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
+const newsreader = Newsreader({ subsets: ['latin'], variable: '--font-serif', style: 'normal' });
 
 export const metadata: Metadata = {
   title: 'CASEFLOW — From Pending to Progress',
-  description: 'Agentic AI Legal Backlog & Procedural Bottleneck Resolution Platform',
+  description: 'Indian Judicial & Case Management Bottleneck Resolution Platform',
 };
 
 export default function RootLayout({
@@ -18,15 +18,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${inter.className} bg-slate-50 text-slate-900 antialiased min-h-screen flex`}>
+    <html lang="en" className={`${inter.variable} ${newsreader.variable}`}>
+      <body className="bg-slate-50 text-slate-900 antialiased min-h-screen">
         <CaseFlowProvider>
-          <Suspense fallback={<div className="w-64 bg-slate-900 h-screen fixed left-0 top-0" />}>
-            <Sidebar />
-          </Suspense>
-          <div className="flex-1 ml-64 flex flex-col min-h-screen">
-            {children}
-          </div>
+          <AppShell>{children}</AppShell>
         </CaseFlowProvider>
       </body>
     </html>

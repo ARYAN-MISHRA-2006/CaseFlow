@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Header } from '@/components/layout/Header';
 import { useCaseFlow } from '@/lib/store';
-import { UploadCloud, FileText, CheckCircle2, Sparkles, AlertCircle, ArrowRight, RefreshCw } from 'lucide-react';
+import { UploadCloud, CheckCircle2, Sparkles, ArrowRight, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 
 export default function DocumentUploadPage() {
@@ -43,12 +43,18 @@ export default function DocumentUploadPage() {
   };
 
   return (
-    <div className="flex-1 pb-12 bg-slate-50 min-h-screen">
-      <Header title="Document Ingestion & Analysis" subtitle="Upload synthetic case documents for automated Agent analysis" />
+    <div className="flex-1 pb-16 bg-slate-50 min-h-screen">
+      <Header />
 
       <main className="px-8 mt-6 space-y-6 max-w-4xl mx-auto">
+        {/* Header Title Bar */}
+        <div className="border-b border-slate-200 pb-4">
+          <h1 className="text-2xl font-serif text-[#172033] font-bold tracking-tight">Document Ingestion & Analysis</h1>
+          <p className="text-xs text-slate-500 mt-0.5">Upload synthetic court documents for automated Agent reasoning and structuring</p>
+        </div>
+
         {/* Upload Card */}
-        <div className="bg-white p-8 rounded-xl border border-slate-200 shadow-sm space-y-6">
+        <div className="bg-white p-8 rounded-xl border border-slate-200/90 shadow-xs space-y-6">
           <div>
             <h2 className="text-base font-bold text-slate-900">Synthetic Document Ingestion Simulator</h2>
             <p className="text-xs text-slate-500 mt-1">
@@ -64,7 +70,7 @@ export default function DocumentUploadPage() {
                 value={selectedCaseId}
                 onChange={(e) => setSelectedCaseId(e.target.value)}
                 disabled={isProcessing}
-                className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-[#172A46]"
               >
                 {cases.map((c) => (
                   <option key={c.id} value={c.id}>
@@ -82,14 +88,14 @@ export default function DocumentUploadPage() {
                 value={fileName}
                 onChange={(e) => setFileName(e.target.value)}
                 disabled={isProcessing}
-                className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                className="w-full px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-800 font-medium focus:outline-none focus:ring-2 focus:ring-[#172A46]"
               />
             </div>
           </div>
 
           {/* Drag and Drop Zone */}
-          <div className="border-2 border-dashed border-indigo-200 bg-indigo-50/40 rounded-xl p-8 text-center space-y-3">
-            <UploadCloud className="w-10 h-10 text-indigo-500 mx-auto" />
+          <div className="border-2 border-dashed border-[#172A46]/20 bg-[#F8F6F0] rounded-xl p-8 text-center space-y-3">
+            <UploadCloud className="w-10 h-10 text-[#172A46] mx-auto" />
             <div>
               <p className="text-xs font-bold text-slate-800">Drag synthetic PDF / DOCX / TXT files here</p>
               <p className="text-[11px] text-slate-500 mt-0.5">Maximum file size: 25 MB (Synthetic Processing)</p>
@@ -97,15 +103,15 @@ export default function DocumentUploadPage() {
             <button
               onClick={handleStartUpload}
               disabled={isProcessing}
-              className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded-lg text-xs font-bold shadow-md transition-all inline-flex items-center gap-2"
+              className="px-5 py-2.5 bg-[#172A46] hover:bg-[#0F1B2D] disabled:opacity-50 text-white rounded-lg text-xs font-bold shadow-xs transition-all inline-flex items-center gap-2"
             >
               {isProcessing ? (
                 <>
-                  <RefreshCw className="w-4 h-4 animate-spin" /> Processing...
+                  <RefreshCw className="w-4 h-4 animate-spin text-[#C8AA72]" /> Processing...
                 </>
               ) : (
                 <>
-                  <Sparkles className="w-4 h-4" /> Start Ingestion & Analysis
+                  <Sparkles className="w-4 h-4 text-[#C8AA72]" /> Start Ingestion & Analysis
                 </>
               )}
             </button>
@@ -113,8 +119,8 @@ export default function DocumentUploadPage() {
 
           {/* Processing Steps Animation */}
           {isProcessing && (
-            <div className="bg-slate-900 text-slate-100 p-6 rounded-xl space-y-4 shadow-lg font-mono text-xs">
-              <div className="flex items-center justify-between text-indigo-400 font-bold border-b border-slate-800 pb-2">
+            <div className="bg-[#0F1B2D] text-slate-100 p-6 rounded-xl space-y-4 shadow-md font-mono text-xs border border-[#1E2E48]">
+              <div className="flex items-center justify-between text-[#C8AA72] font-bold border-b border-[#1E2E48] pb-2">
                 <span>AGENT PIPELINE PROCESSING</span>
                 <span>STEP {stepIndex + 1} OF 6</span>
               </div>
@@ -150,7 +156,7 @@ export default function DocumentUploadPage() {
           {isComplete && (
             <div className="bg-emerald-50 border border-emerald-300 p-6 rounded-xl space-y-4">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold">
+                <div className="w-10 h-10 rounded-full bg-[#16805C] text-white flex items-center justify-center font-bold">
                   <CheckCircle2 className="w-6 h-6" />
                 </div>
                 <div>
@@ -164,7 +170,7 @@ export default function DocumentUploadPage() {
               <div className="flex items-center space-x-3 pt-2">
                 <Link
                   href={`/cases/${selectedCaseId}`}
-                  className="px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-bold shadow-sm inline-flex items-center gap-1.5"
+                  className="px-4 py-2 bg-[#172A46] hover:bg-[#0F1B2D] text-white rounded-lg text-xs font-bold shadow-xs inline-flex items-center gap-1.5"
                 >
                   <span>Inspect Case Workspace</span>
                   <ArrowRight className="w-3.5 h-3.5" />

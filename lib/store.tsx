@@ -12,6 +12,9 @@ interface CaseFlowContextType {
   setDemoMode: (val: boolean) => void;
   userRole: 'Admin' | 'Legal Staff' | 'Reviewer';
   setUserRole: (role: 'Admin' | 'Legal Staff' | 'Reviewer') => void;
+  sidebarCollapsed: boolean;
+  setSidebarCollapsed: (val: boolean) => void;
+  toggleSidebar: () => void;
   getCase: (id: string) => CaseItem | undefined;
   approveAction: (actionId: string, modifiedDraft?: string) => void;
   rejectAction: (actionId: string, reason: string) => void;
@@ -29,8 +32,9 @@ export const CaseFlowProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const [analytics, setAnalytics] = useState<AnalyticsData>(INITIAL_ANALYTICS);
   const [demoMode, setDemoMode] = useState<boolean>(true);
   const [userRole, setUserRole] = useState<'Admin' | 'Legal Staff' | 'Reviewer'>('Admin');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false);
 
-  // Load persisted demo state if present
+  // Load persisted demo state & sidebar state if present
   useEffect(() => {
     try {
       const storedCases = localStorage.getItem('caseflow_cases');
@@ -41,10 +45,26 @@ export const CaseFlowProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       if (storedLogs) {
         setAuditLogs(JSON.parse(storedLogs));
       }
+      const storedSidebar = localStorage.getItem('caseflow_sidebar_collapsed');
+      if (storedSidebar !== null) {
+        setSidebarCollapsed(storedSidebar === 'true');
+      }
     } catch {
       // Fallback to initial mock data
     }
   }, []);
+
+  const toggleSidebar = () => {
+    setSidebarCollapsed((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem('caseflow_sidebar_collapsed', String(next));
+      } catch {
+        // ignore
+      }
+      return next;
+    });
+  };
 
   // Save changes
   const saveState = (updatedCases: CaseItem[], updatedLogs: AuditLogEntry[]) => {
@@ -299,6 +319,9 @@ export const CaseFlowProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         setDemoMode,
         userRole,
         setUserRole,
+        sidebarCollapsed,
+        setSidebarCollapsed,
+        toggleSidebar,
         getCase,
         approveAction,
         rejectAction,

@@ -2,85 +2,75 @@
 
 import React from 'react';
 import { useCaseFlow } from '@/lib/store';
-import { Shield, Bell, Search, Sparkles, AlertCircle } from 'lucide-react';
+import { Search, Bell, PanelLeft, ChevronDown, User, Shield } from 'lucide-react';
 
 interface HeaderProps {
-  title: string;
+  title?: string;
   subtitle?: string;
 }
 
-export const Header: React.FC<HeaderProps> = ({ title, subtitle }) => {
-  const { demoMode, setDemoMode, userRole, setUserRole } = useCaseFlow();
+export const Header: React.FC<HeaderProps> = () => {
+  const { userRole, setUserRole, toggleSidebar } = useCaseFlow();
 
   return (
-    <header className="sticky top-0 z-20 bg-white border-b border-slate-200 px-8 py-4 shadow-sm">
-      <div className="flex items-center justify-between">
-        <div>
-          <div className="flex items-center space-x-2">
-            <h1 className="text-2xl font-bold text-slate-900 tracking-tight">{title}</h1>
-            {demoMode && (
-              <span className="px-2.5 py-0.5 text-xs font-semibold rounded-full bg-purple-100 text-purple-800 border border-purple-200 flex items-center gap-1">
-                <Sparkles className="w-3 h-3 text-purple-600" />
-                Synthetic Data
-              </span>
-            )}
-          </div>
-          {subtitle && <p className="text-sm text-slate-500 mt-0.5">{subtitle}</p>}
-        </div>
+    <header className="sticky top-0 z-30 bg-white border-b border-slate-200/90 px-6 py-3 shadow-xs">
+      <div className="flex items-center justify-between gap-4">
+        {/* Left Side: Sidebar Toggle & Institutional Search */}
+        <div className="flex items-center space-x-3 flex-1 max-w-2xl">
+          <button
+            onClick={toggleSidebar}
+            className="p-2 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors shrink-0"
+            title="Toggle sidebar"
+          >
+            <PanelLeft className="w-5 h-5" />
+          </button>
 
-        <div className="flex items-center space-x-4">
-          {/* Quick Search */}
-          <div className="relative hidden md:block w-64">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+          {/* Search Bar */}
+          <div className="relative w-full">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-2.5" />
             <input
               type="text"
-              placeholder="Search case #, title..."
-              className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 placeholder-slate-400"
+              placeholder="Search cases by case number, party name, type, or keyword..."
+              className="w-full pl-10 pr-16 py-2 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#172A46] focus:bg-white transition-all"
             />
+            <kbd className="absolute right-3 top-2.5 px-1.5 py-0.5 text-[10px] font-mono font-medium text-slate-400 bg-white border border-slate-200 rounded shadow-xs">
+              Ctrl K
+            </kbd>
+          </div>
+        </div>
+
+        {/* Right Side: Role Selector, Notifications, User Avatar */}
+        <div className="flex items-center space-x-4 shrink-0">
+          {/* Role Selector Dropdown */}
+          <div className="flex items-center space-x-1 bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-200 text-xs">
+            <Shield className="w-3.5 h-3.5 text-slate-500" />
+            <select
+              value={userRole}
+              onChange={(e) => setUserRole(e.target.value as any)}
+              className="bg-transparent font-semibold text-slate-700 text-xs focus:outline-none cursor-pointer"
+            >
+              <option value="Admin">Admin</option>
+              <option value="Legal Staff">Legal Staff</option>
+              <option value="Reviewer">Reviewer</option>
+            </select>
           </div>
 
-          {/* Role Switcher */}
-          <div className="flex items-center space-x-2 bg-slate-100 p-1 rounded-lg border border-slate-200 text-xs">
-            <Shield className="w-3.5 h-3.5 text-slate-500 ml-1.5" />
-            <span className="text-slate-500 font-medium text-[11px]">Role:</span>
-            {(['Admin', 'Legal Staff', 'Reviewer'] as const).map((role) => (
-              <button
-                key={role}
-                onClick={() => setUserRole(role)}
-                className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
-                  userRole === role
-                    ? 'bg-white text-indigo-700 shadow-sm border border-slate-200'
-                    : 'text-slate-600 hover:text-slate-900'
-                }`}
-              >
-                {role}
-              </button>
-            ))}
-          </div>
-
-          {/* Demo Toggle Button */}
-          <button
-            onClick={() => setDemoMode(!demoMode)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center space-x-1.5 transition-all ${
-              demoMode
-                ? 'bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100'
-                : 'bg-slate-100 text-slate-600 border border-slate-200 hover:bg-slate-200'
-            }`}
-          >
-            <AlertCircle className="w-3.5 h-3.5 text-purple-600" />
-            <span>Demo: {demoMode ? 'ON' : 'OFF'}</span>
+          {/* Notifications Icon with Badge 3 */}
+          <button className="relative p-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors">
+            <Bell className="w-4.5 h-4.5" />
+            <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-red-600 text-white rounded-full text-[9px] font-bold flex items-center justify-center border-2 border-white">
+              3
+            </span>
           </button>
 
-          {/* Notifications */}
-          <button className="relative p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors">
-            <Bell className="w-4 h-4" />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-amber-500 rounded-full"></span>
-          </button>
-
-          {/* User Badge */}
-          <div className="flex items-center space-x-2 pl-2 border-l border-slate-200">
-            <div className="w-8 h-8 rounded-full bg-slate-800 text-white font-bold flex items-center justify-center text-xs">
-              {userRole[0]}
+          {/* User Profile Avatar */}
+          <div className="flex items-center space-x-2.5 pl-2 border-l border-slate-200">
+            <div className="w-8 h-8 rounded-full bg-[#172A46] text-white font-bold flex items-center justify-center text-xs shadow-xs">
+              A
+            </div>
+            <div className="hidden sm:flex items-center space-x-1 cursor-pointer">
+              <span className="text-xs font-semibold text-slate-800">Aryan Mishra</span>
+              <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
             </div>
           </div>
         </div>
