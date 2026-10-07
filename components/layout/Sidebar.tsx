@@ -11,8 +11,8 @@ import {
   BarChart3,
   History,
   Settings,
-  ChevronsLeft,
-  ChevronsRight,
+  PanelLeftClose,
+  PanelLeftOpen,
   ShieldCheck,
   ChevronDown,
   ChevronUp,
@@ -29,9 +29,9 @@ const NAV_ITEMS = [
   { label: 'Settings', href: '/settings', icon: Settings },
 ];
 
-// Custom Original Indian Judicial Emblem SVG Mark
-const JudicialEmblem = () => (
-  <svg width="32" height="32" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className="shrink-0">
+// Original Original Indian Judicial Emblem SVG Mark
+const JudicialEmblem = ({ className = 'w-7 h-7' }: { className?: string }) => (
+  <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className={`${className} shrink-0 transition-transform duration-300`}>
     <path d="M20 4L23.5 11H16.5L20 4Z" fill="#C8AA72" />
     <path d="M20 11V28" stroke="#C8AA72" strokeWidth="2.5" strokeLinecap="round" />
     <path d="M10 14H30" stroke="#C8AA72" strokeWidth="2" strokeLinecap="round" />
@@ -51,33 +51,36 @@ export const Sidebar = () => {
 
   return (
     <aside
-      className={`bg-[#0F1B2D] text-slate-300 flex flex-col h-screen fixed left-0 top-0 z-40 border-r border-[#1E2E48] transition-all duration-300 select-none ${
+      className={`bg-[#0F1B2D] text-slate-300 flex flex-col h-screen fixed left-0 top-0 z-40 border-r border-[#1E2E48] transition-all duration-300 ease-in-out select-none ${
         sidebarCollapsed ? 'w-20' : 'w-64'
       }`}
     >
       {/* Sidebar Header & Brand Logo */}
-      <div className="p-4 border-b border-[#1E2E48] flex items-center justify-between min-h-[72px]">
-        <Link href="/" className="flex items-center space-x-3 overflow-hidden">
-          <JudicialEmblem />
+      <div className="px-4 py-3.5 border-b border-[#1E2E48] flex items-center justify-between min-h-[64px]">
+        <Link href="/" className="flex items-center space-x-3 overflow-hidden group">
+          <JudicialEmblem className={sidebarCollapsed ? 'w-8 h-8 mx-auto' : 'w-7 h-7'} />
           {!sidebarCollapsed && (
-            <div className="leading-tight transition-opacity duration-200">
+            <div className="leading-tight transition-all duration-300">
               <h1 className="text-base font-serif tracking-wider text-[#F8F6F0] font-bold">CASEFLOW</h1>
               <p className="text-[10px] font-medium text-[#C8AA72] tracking-normal">From Pending to Progress</p>
             </div>
           )}
         </Link>
 
-        <button
-          onClick={toggleSidebar}
-          className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-[#1C2C46] transition-colors shrink-0"
-          title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-        >
-          {sidebarCollapsed ? <ChevronsRight className="w-4 h-4" /> : <ChevronsLeft className="w-4 h-4" />}
-        </button>
+        {/* Single Unified Toggle Button */}
+        {!sidebarCollapsed && (
+          <button
+            onClick={toggleSidebar}
+            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-[#1C2C46] transition-colors shrink-0"
+            title="Collapse sidebar"
+          >
+            <PanelLeftClose className="w-4 h-4" />
+          </button>
+        )}
       </div>
 
       {/* Main Navigation Links */}
-      <nav className="flex-1 px-3 py-4 space-y-1 overflow-y-auto">
+      <nav className="flex-1 px-3 py-4 space-y-1.5 overflow-y-auto">
         {NAV_ITEMS.map((item) => {
           const Icon = item.icon;
           const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
@@ -89,30 +92,30 @@ export const Sidebar = () => {
               href={item.href}
               title={sidebarCollapsed ? item.label : undefined}
               className={`group relative flex items-center ${
-                sidebarCollapsed ? 'justify-center px-0 py-3' : 'justify-between px-3.5 py-2.5'
-              } rounded-lg text-xs font-semibold transition-all duration-150 ${
+                sidebarCollapsed ? 'justify-center px-0 py-3' : 'justify-between px-3 py-2.5'
+              } rounded-lg text-xs font-semibold transition-all duration-200 ${
                 isActive
-                  ? 'bg-[#1C2C46] text-white shadow-sm border-l-2 border-[#B08D57]'
+                  ? 'bg-[#1C2C46] text-white shadow-xs border-l-2 border-[#B08D57]'
                   : 'text-slate-400 hover:text-slate-100 hover:bg-[#16253C]'
               }`}
             >
               <div className="flex items-center space-x-3">
-                <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-[#C8AA72]' : 'text-slate-400 group-hover:text-slate-200'}`} />
-                {!sidebarCollapsed && <span>{item.label}</span>}
+                <Icon className={`w-4.5 h-4.5 shrink-0 transition-colors ${isActive ? 'text-[#C8AA72]' : 'text-slate-400 group-hover:text-slate-200'}`} />
+                {!sidebarCollapsed && <span className="truncate">{item.label}</span>}
               </div>
 
               {!sidebarCollapsed && typeof badgeValue === 'number' && badgeValue > 0 && (
-                <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-[#B08D57]/20 text-[#E2C799] border border-[#B08D57]/40">
+                <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-[#B08D57]/20 text-[#E2C799] border border-[#B08D57]/40 shrink-0">
                   {badgeValue}
                 </span>
               )}
 
               {/* Tooltip when collapsed */}
               {sidebarCollapsed && (
-                <div className="absolute left-full ml-2 px-2.5 py-1 bg-slate-900 text-white text-xs rounded shadow-lg whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50">
+                <div className="absolute left-full ml-3 px-3 py-1.5 bg-[#101827] border border-[#1E2E48] text-white text-xs rounded-lg shadow-xl whitespace-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-all duration-200 z-50">
                   {item.label}
                   {typeof badgeValue === 'number' && badgeValue > 0 && (
-                    <span className="ml-1.5 px-1.5 py-0.2 text-[10px] bg-amber-500/30 text-amber-300 rounded font-bold">
+                    <span className="ml-2 px-1.5 py-0.5 text-[10px] bg-amber-500/30 text-amber-300 rounded font-bold">
                       {badgeValue}
                     </span>
                   )}
@@ -123,62 +126,84 @@ export const Sidebar = () => {
         })}
       </nav>
 
-      {/* Footer System Status & Agent Fleet Monitoring */}
-      <div className="p-4 border-t border-[#1E2E48] bg-[#0B1422] space-y-3 text-[11px]">
-        {/* System Status */}
-        <div className="flex items-center space-x-2">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>
-          {!sidebarCollapsed ? (
-            <div>
-              <div className="font-bold text-slate-300 text-[11px]">System Status</div>
-              <div className="text-emerald-400 font-semibold text-[10px]">All Systems Operational</div>
-            </div>
-          ) : (
-            <div className="hidden group-hover:block" />
-          )}
-        </div>
-
-        {/* AI Agents Monitoring Section */}
-        {!sidebarCollapsed && (
-          <div className="pt-2 border-t border-[#1C2C46] space-y-1.5">
-            <button
-              onClick={() => setAgentsExpanded(!agentsExpanded)}
-              className="flex items-center justify-between w-full text-slate-400 hover:text-white font-bold uppercase tracking-wider text-[10px]"
-            >
-              <span className="flex items-center space-x-1.5">
-                <ShieldCheck className="w-3.5 h-3.5 text-[#C8AA72]" />
-                <span>AI AGENTS</span>
-              </span>
-              {agentsExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
-            </button>
-
-            {agentsExpanded && (
-              <div className="space-y-1 pl-1 text-[11px] text-slate-400">
-                <div className="flex items-center space-x-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                  <span>Case Understanding</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                  <span>Bottleneck Detection</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                  <span>Action Recommendation</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                  <span>Follow-up Tracking</span>
-                </div>
+      {/* Single Integrated System & AI Fleet Monitoring Box */}
+      <div className="p-3 border-t border-[#1E2E48] bg-[#0A1320]">
+        {!sidebarCollapsed ? (
+          <div className="bg-[#111C2E] border border-[#1C2E4A] rounded-xl p-3 space-y-3 shadow-inner">
+            {/* System Status Row */}
+            <div className="flex items-center justify-between pb-2 border-b border-[#1E2E48]">
+              <div className="flex items-center space-x-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span className="font-bold text-slate-200 text-[11px]">System Status</span>
               </div>
-            )}
-          </div>
-        )}
+              <span className="text-[10px] font-bold text-emerald-400 bg-emerald-950/60 px-2 py-0.5 rounded border border-emerald-800/40">
+                Operational
+              </span>
+            </div>
 
-        {!sidebarCollapsed && (
-          <div className="pt-2 border-t border-[#1C2C46] flex items-center justify-between text-[10px] text-slate-500 font-mono">
-            <span>PostgreSQL Ready</span>
-            <span>v0.1.0</span>
+            {/* AI Agents Monitoring List */}
+            <div className="space-y-1.5">
+              <button
+                onClick={() => setAgentsExpanded(!agentsExpanded)}
+                className="flex items-center justify-between w-full text-slate-400 hover:text-white font-bold uppercase tracking-wider text-[10px]"
+              >
+                <span className="flex items-center space-x-1.5">
+                  <ShieldCheck className="w-3.5 h-3.5 text-[#C8AA72]" />
+                  <span>AI AGENT FLEET</span>
+                </span>
+                {agentsExpanded ? <ChevronUp className="w-3 h-3 text-slate-400" /> : <ChevronDown className="w-3 h-3 text-slate-400" />}
+              </button>
+
+              {agentsExpanded && (
+                <div className="space-y-1 pt-1 text-[10px] text-slate-300 pl-1 font-mono">
+                  <div className="flex items-center justify-between">
+                    <span className="flex items-center space-x-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                      <span className="truncate">Case Understanding</span>
+                    </span>
+                    <span className="text-emerald-400 font-sans text-[9px]">Ready</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="flex items-center space-x-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                      <span className="truncate">Bottleneck Detection</span>
+                    </span>
+                    <span className="text-emerald-400 font-sans text-[9px]">Ready</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="flex items-center space-x-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                      <span className="truncate">Action Recommendation</span>
+                    </span>
+                    <span className="text-emerald-400 font-sans text-[9px]">Ready</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="flex items-center space-x-1.5">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                      <span className="truncate">Follow-up Tracking</span>
+                    </span>
+                    <span className="text-emerald-400 font-sans text-[9px]">Ready</span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="pt-2 border-t border-[#1C2E4A] flex items-center justify-between text-[10px] text-slate-400 font-mono">
+              <span>PostgreSQL Ready</span>
+              <span>v0.1.0</span>
+            </div>
+          </div>
+        ) : (
+          /* Collapsed Status Indicator */
+          <div className="flex flex-col items-center py-2 space-y-3">
+            <button
+              onClick={toggleSidebar}
+              className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-[#1C2C46] transition-colors"
+              title="Expand sidebar"
+            >
+              <PanelLeftOpen className="w-5 h-5 text-[#C8AA72]" />
+            </button>
+            <div className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" title="All Systems Operational"></div>
           </div>
         )}
       </div>

@@ -1,8 +1,8 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { useCaseFlow } from '@/lib/store';
-import { Search, Bell, PanelLeft, ChevronDown, User, Shield } from 'lucide-react';
+import { Search, Bell, PanelLeft, ChevronDown, Shield } from 'lucide-react';
 
 interface HeaderProps {
   title?: string;
@@ -10,30 +10,46 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = () => {
-  const { userRole, setUserRole, toggleSidebar } = useCaseFlow();
+  const { userRole, setUserRole, toggleSidebar, sidebarCollapsed } = useCaseFlow();
+  const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Global Ctrl + K Keyboard Shortcut Listener
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   return (
-    <header className="sticky top-0 z-30 bg-white border-b border-slate-200/90 px-6 py-3 shadow-xs">
+    <header className="sticky top-0 z-30 bg-white border-b border-slate-200/90 px-6 py-2.5 shadow-xs">
       <div className="flex items-center justify-between gap-4">
-        {/* Left Side: Sidebar Toggle & Institutional Search */}
+        {/* Left Side: Sidebar Toggle & Functional Search */}
         <div className="flex items-center space-x-3 flex-1 max-w-2xl">
-          <button
-            onClick={toggleSidebar}
-            className="p-2 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors shrink-0"
-            title="Toggle sidebar"
-          >
-            <PanelLeft className="w-5 h-5" />
-          </button>
+          {sidebarCollapsed && (
+            <button
+              onClick={toggleSidebar}
+              className="p-1.5 rounded-lg text-slate-600 hover:text-[#172A46] hover:bg-slate-100 transition-colors shrink-0"
+              title="Expand sidebar"
+            >
+              <PanelLeft className="w-5 h-5 text-[#172A46]" />
+            </button>
+          )}
 
-          {/* Search Bar */}
+          {/* Search Bar with working Ctrl + K focus */}
           <div className="relative w-full">
             <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-2.5" />
             <input
+              ref={searchInputRef}
               type="text"
               placeholder="Search cases by case number, party name, type, or keyword..."
-              className="w-full pl-10 pr-16 py-2 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#172A46] focus:bg-white transition-all"
+              className="w-full pl-10 pr-20 py-2 text-xs bg-slate-50 border border-slate-200 rounded-lg text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#172A46] focus:bg-white transition-all"
             />
-            <kbd className="absolute right-3 top-2.5 px-1.5 py-0.5 text-[10px] font-mono font-medium text-slate-400 bg-white border border-slate-200 rounded shadow-xs">
+            <kbd className="absolute right-3 top-2 px-1.5 py-0.5 text-[10px] font-mono font-medium text-slate-400 bg-white border border-slate-200 rounded shadow-xs pointer-events-none">
               Ctrl K
             </kbd>
           </div>

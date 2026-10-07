@@ -12,7 +12,6 @@ import {
   CheckCircle2,
   TrendingUp,
   ArrowRight,
-  ExternalLink,
   Sparkles,
   PieChart,
   Activity,
@@ -33,31 +32,33 @@ export default function DashboardPage() {
     <div className="flex-1 pb-16 bg-slate-50 min-h-screen">
       <Header />
 
-      {/* Hero Section: Institutional Banner */}
-      <div className="bg-[#F8F6F0] border-b border-[#EAE5D9] px-8 py-7 relative overflow-hidden">
-        {/* Subtle Background Architectural Motif */}
-        <div className="absolute right-0 top-0 bottom-0 w-1/3 opacity-10 pointer-events-none flex items-center justify-end pr-8">
-          <svg width="280" height="140" viewBox="0 0 280 140" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M140 10L270 50V60H10V50L140 10Z" fill="#172A46" />
-            <rect x="25" y="60" width="12" height="70" fill="#172A46" />
-            <rect x="65" y="60" width="12" height="70" fill="#172A46" />
-            <rect x="105" y="60" width="12" height="70" fill="#172A46" />
-            <rect x="145" y="60" width="12" height="70" fill="#172A46" />
-            <rect x="185" y="60" width="12" height="70" fill="#172A46" />
-            <rect x="225" y="60" width="12" height="70" fill="#172A46" />
-            <rect x="10" y="130" width="260" height="10" fill="#172A46" />
+      {/* Hero Section: Institutional Warm Ivory Banner */}
+      <div className="bg-[#F8F6F0] border-b border-[#EAE5D9] px-8 py-8 relative overflow-hidden">
+        {/* Subtle Architectural Supreme Court Graphic */}
+        <div className="absolute right-0 top-0 bottom-0 w-1/2 opacity-15 pointer-events-none flex items-center justify-end pr-12">
+          <svg width="420" height="150" viewBox="0 0 420 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M210 10L390 60V70H30V60L210 10Z" fill="#172A46" />
+            <circle cx="210" cy="40" r="14" fill="#C8AA72" opacity="0.6" />
+            <rect x="50" y="70" width="16" height="70" rx="2" fill="#172A46" />
+            <rect x="100" y="70" width="16" height="70" rx="2" fill="#172A46" />
+            <rect x="150" y="70" width="16" height="70" rx="2" fill="#172A46" />
+            <rect x="200" y="70" width="16" height="70" rx="2" fill="#172A46" />
+            <rect x="250" y="70" width="16" height="70" rx="2" fill="#172A46" />
+            <rect x="300" y="70" width="16" height="70" rx="2" fill="#172A46" />
+            <rect x="350" y="70" width="16" height="70" rx="2" fill="#172A46" />
+            <rect x="30" y="140" width="360" height="10" rx="2" fill="#172A46" />
           </svg>
         </div>
 
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
-          <div>
+          <div className="space-y-1">
             <h1 className="text-3xl font-serif text-[#172033] font-bold tracking-tight">Good evening, Aryan</h1>
-            <p className="text-sm text-slate-600 mt-1">Here’s the current status of cases and key insights across the system.</p>
+            <p className="text-sm text-slate-600">Here’s the current status of cases and key insights across the system.</p>
           </div>
 
           {/* Institutional Tagline Card */}
-          <div className="bg-white/80 backdrop-blur-xs border border-[#C8AA72]/30 pl-4 pr-6 py-2.5 rounded-lg shadow-xs flex items-center space-x-3.5">
-            <div className="w-1 h-10 bg-[#B08D57] rounded-full shrink-0"></div>
+          <div className="bg-white/90 backdrop-blur-xs border border-[#C8AA72]/40 pl-4 pr-6 py-3 rounded-xl shadow-xs flex items-center space-x-3.5 shrink-0">
+            <div className="w-1.5 h-10 bg-[#B08D57] rounded-full shrink-0"></div>
             <div className="font-serif text-xs leading-relaxed text-[#172033]">
               <span className="font-bold text-[#172A46] block">Faster Workflows.</span>
               <span className="font-bold text-[#B08D57] block">Stronger Justice.</span>
@@ -86,10 +87,10 @@ export default function DashboardPage() {
           </div>
         )}
 
-        {/* KPI Cards Row */}
+        {/* Cohesive 5 KPI Cards Row */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           {/* Card 1: Total Cases */}
-          <div className="bg-white p-4.5 rounded-xl border border-slate-200/90 shadow-xs space-y-2">
+          <div className="bg-white p-4.5 rounded-xl border border-slate-200/90 shadow-xs hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 flex flex-col justify-between space-y-3">
             <div className="flex items-center justify-between text-slate-500 text-[11px] font-semibold uppercase tracking-wider">
               <span>Total Cases</span>
               <div className="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center text-slate-600">
@@ -103,14 +104,14 @@ export default function DashboardPage() {
           </div>
 
           {/* Card 2: Requires Attention */}
-          <div className="bg-white p-4.5 rounded-xl border border-slate-200/90 shadow-xs space-y-2">
+          <div className="bg-white p-4.5 rounded-xl border border-slate-200/90 shadow-xs hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 flex flex-col justify-between space-y-3">
             <div className="flex items-center justify-between text-slate-500 text-[11px] font-semibold uppercase tracking-wider">
               <span>Requires Attention</span>
               <div className="w-7 h-7 rounded-lg bg-amber-50 flex items-center justify-center text-amber-600">
                 <AlertTriangle className="w-3.5 h-3.5" />
               </div>
             </div>
-            <div className="flex items-baseline space-x-2">
+            <div className="flex items-center justify-between">
               <span className="text-2xl font-bold text-slate-900">{analytics.requiresAttention}</span>
               <span className="px-2 py-0.5 text-[10px] font-bold rounded bg-amber-100 text-amber-800 border border-amber-200">
                 High Priority
@@ -119,17 +120,17 @@ export default function DashboardPage() {
             <div className="text-[11px] text-slate-500">Cases with critical bottlenecks</div>
           </div>
 
-          {/* Card 3: Bottlenecks Detected */}
-          <div className="bg-white p-4.5 rounded-xl border border-slate-200/90 shadow-xs space-y-2">
+          {/* Card 3: Bottlenecks Detected (Clean Single Box Layout) */}
+          <div className="bg-white p-4.5 rounded-xl border border-slate-200/90 shadow-xs hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 flex flex-col justify-between space-y-3">
             <div className="flex items-center justify-between text-slate-500 text-[11px] font-semibold uppercase tracking-wider">
               <span>Bottlenecks Detected</span>
               <div className="w-7 h-7 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
                 <GitFork className="w-3.5 h-3.5" />
               </div>
             </div>
-            <div className="flex items-baseline space-x-2">
+            <div className="flex items-center justify-between">
               <span className="text-2xl font-bold text-slate-900">{analytics.bottlenecksDetected}</span>
-              <span className="px-1.5 py-0.5 text-[10px] font-bold rounded bg-indigo-50 text-indigo-700 border border-indigo-200">
+              <span className="px-2 py-0.5 text-[10px] font-bold rounded bg-indigo-50 text-indigo-700 border border-indigo-200">
                 35% of total
               </span>
             </div>
@@ -137,7 +138,7 @@ export default function DashboardPage() {
           </div>
 
           {/* Card 4: Awaiting Approval */}
-          <div className="bg-white p-4.5 rounded-xl border border-slate-200/90 shadow-xs space-y-2">
+          <div className="bg-white p-4.5 rounded-xl border border-slate-200/90 shadow-xs hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 flex flex-col justify-between space-y-3">
             <div className="flex items-center justify-between text-slate-500 text-[11px] font-semibold uppercase tracking-wider">
               <span>Awaiting Approval</span>
               <div className="w-7 h-7 rounded-lg bg-blue-50 flex items-center justify-center text-blue-600">
@@ -149,14 +150,14 @@ export default function DashboardPage() {
           </div>
 
           {/* Card 5: Potentially Unblocked */}
-          <div className="bg-white p-4.5 rounded-xl border border-slate-200/90 shadow-xs space-y-2">
+          <div className="bg-white p-4.5 rounded-xl border border-slate-200/90 shadow-xs hover:-translate-y-0.5 hover:shadow-md transition-all duration-200 flex flex-col justify-between space-y-3">
             <div className="flex items-center justify-between text-slate-500 text-[11px] font-semibold uppercase tracking-wider">
               <span>Potentially Unblocked</span>
               <div className="w-7 h-7 rounded-lg bg-emerald-50 flex items-center justify-center text-emerald-600">
                 <CheckCircle2 className="w-3.5 h-3.5" />
               </div>
             </div>
-            <div className="flex items-baseline space-x-2">
+            <div className="flex items-center justify-between">
               <span className="text-2xl font-bold text-emerald-800">{analytics.potentiallyUnblocked}</span>
               <span className="text-[10px] font-bold text-emerald-700 flex items-center">
                 <TrendingUp className="w-3 h-3 mr-0.5" /> 12.3%
@@ -179,9 +180,7 @@ export default function DashboardPage() {
               {/* Donut SVG */}
               <div className="my-5 flex items-center justify-center relative">
                 <svg width="170" height="170" viewBox="0 0 100 100" className="transform -rotate-90">
-                  {/* Total 100 stroke-dasharray */}
                   <circle cx="50" cy="50" r="38" stroke="#E2E8F0" strokeWidth="14" fill="transparent" />
-                  {/* Low (36%) */}
                   <circle
                     cx="50"
                     cy="50"
@@ -192,7 +191,6 @@ export default function DashboardPage() {
                     strokeDasharray="238.76"
                     strokeDashoffset="85.95"
                   />
-                  {/* Medium (42%) */}
                   <circle
                     cx="50"
                     cy="50"
@@ -203,7 +201,6 @@ export default function DashboardPage() {
                     strokeDasharray="238.76"
                     strokeDashoffset="138.48"
                   />
-                  {/* High (18%) */}
                   <circle
                     cx="50"
                     cy="50"
@@ -214,7 +211,6 @@ export default function DashboardPage() {
                     strokeDasharray="238.76"
                     strokeDashoffset="181.45"
                   />
-                  {/* Critical (4%) */}
                   <circle
                     cx="50"
                     cy="50"
@@ -227,14 +223,12 @@ export default function DashboardPage() {
                   />
                 </svg>
 
-                {/* Donut Center Label */}
                 <div className="absolute text-center">
                   <div className="text-xl font-bold text-slate-900">1,250</div>
                   <div className="text-[10px] font-semibold text-slate-500 uppercase">Total Cases</div>
                 </div>
               </div>
 
-              {/* Donut Legend */}
               <div className="grid grid-cols-2 gap-2 text-xs pt-1 border-t border-slate-100">
                 <div className="flex items-center space-x-2">
                   <span className="w-2.5 h-2.5 rounded-full bg-[#C62828] shrink-0"></span>
@@ -274,7 +268,6 @@ export default function DashboardPage() {
                 </Link>
               </div>
 
-              {/* Progress Bars */}
               <div className="space-y-3.5 text-xs">
                 {[
                   { label: 'Missing Documents', count: '142 (32.4%)', width: '85%', color: 'bg-[#C62828]' },
@@ -311,7 +304,6 @@ export default function DashboardPage() {
                 </Link>
               </div>
 
-              {/* Feed items */}
               <div className="space-y-3.5 text-xs">
                 <div className="flex items-start space-x-3">
                   <div className="w-7 h-7 rounded-lg bg-purple-50 text-purple-700 border border-purple-200 flex items-center justify-center shrink-0 font-bold">
@@ -446,12 +438,12 @@ export default function DashboardPage() {
                       </td>
                       <td className="py-3.5 px-4">
                         <span
-                          className={`px-2.5 py-0.5 rounded text-[10px] font-semibold ${
+                          className={`px-2 py-1 rounded text-[10px] font-bold whitespace-nowrap inline-flex items-center gap-1 ${
                             c.status === 'Bottleneck Detected'
-                              ? 'bg-red-50 text-red-800 border border-red-200'
+                              ? 'bg-red-50 text-[#C62828] border border-red-200'
                               : c.status === 'Awaiting Action'
-                              ? 'bg-amber-50 text-amber-800 border border-amber-200'
-                              : 'bg-blue-50 text-blue-800 border border-blue-200'
+                              ? 'bg-amber-50 text-[#D97706] border border-amber-200'
+                              : 'bg-blue-50 text-[#2563EB] border border-blue-200'
                           }`}
                         >
                           {c.status}
